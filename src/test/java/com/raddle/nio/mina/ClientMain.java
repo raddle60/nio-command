@@ -62,9 +62,21 @@ public class ClientMain {
 			});
 			// 收取响应
 			Thread.sleep(1000);
-			sender.sendCommand("quit");
+			sender.sendCommand("quit", 1, new CommandCallback<String, Object>() {
+
+				@Override
+				public void commandResponse(String command, Object response) {
+					
+				}
+
+				@Override
+				public void responseTimeout(String command) {
+					System.out.println(command + " response timeout");
+				}
+			});
 			session.getCloseFuture().awaitUninterruptibly();
-			Thread.sleep(500);
+			// 等待出现响应超时
+			Thread.sleep(10000);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
