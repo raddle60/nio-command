@@ -4,6 +4,7 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 
 import com.raddle.nio.mina.cmd.CommandBodyWrapper;
+import com.raddle.nio.mina.cmd.CommandContext;
 import com.raddle.nio.mina.cmd.ResponseWaiting;
 import com.raddle.nio.mina.cmd.SessionCommandSender;
 
@@ -14,13 +15,18 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 		if (message != null && message instanceof CommandBodyWrapper) {
 			CommandBodyWrapper wrapper = (CommandBodyWrapper) message;
 			Object body = wrapper.getBody();
-			if (wrapper.isRequest()) {
-				Object result = processCommand(body);
-				if(result != null){
-					new SessionCommandSender(session).sendResponse(wrapper.getId(), result);
+			try {
+				CommandContext.setCommandSender(new SessionCommandSender(session));
+				if (wrapper.isRequest()) {
+					Object result = processCommand(body);
+					if (result != null) {
+						CommandContext.getCommandSender().sendResponse(wrapper.getId(), result);
+					}
+				} else {
+					ResponseWaiting.responseReceived(wrapper.getId(), body);
 				}
-			} else {
-				ResponseWaiting.responseReceived(wrapper.getId(), body);
+			} finally {
+				CommandContext.setCommandSender(null);
 			}
 		}
 	}
