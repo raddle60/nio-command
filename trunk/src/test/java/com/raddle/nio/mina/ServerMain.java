@@ -11,6 +11,7 @@ import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.omg.CORBA.BooleanHolder;
 
+import com.raddle.nio.mina.cmd.SessionCommandSender;
 import com.raddle.nio.mina.cmd.handler.AbstractCommandHandler;
 import com.raddle.nio.mina.hessian.HessianDecoder;
 import com.raddle.nio.mina.hessian.HessianEncoder;
@@ -37,6 +38,11 @@ public class ServerMain {
 					return null;
 				} else {
 					System.out.println("command [" + command + "] received");
+					// CommandContext.getCommandSender() is current session
+					// notify all sessions
+					for (IoSession session : acceptor.getManagedSessions().values()) {
+						new SessionCommandSender(session).sendCommand("notify");
+					}
 					return "command [" + command + "] received";
 				}
 			}

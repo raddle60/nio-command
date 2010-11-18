@@ -8,6 +8,7 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
+import com.raddle.nio.mina.cmd.CommandContext;
 import com.raddle.nio.mina.cmd.SessionCommandSender;
 import com.raddle.nio.mina.cmd.api.CommandCallback;
 import com.raddle.nio.mina.cmd.api.CommandSender;
@@ -19,7 +20,7 @@ public class ClientMain {
 	public static void main(String[] args) {
 		NioSocketConnector connector = new NioSocketConnector();
 		connector.setConnectTimeoutMillis(1000);
-		connector.getSessionConfig().setReaderIdleTime(10);//10秒沒收到数据就超时
+		connector.getSessionConfig().setReaderIdleTime(10);// 10秒沒收到数据就超时
 		connector.getFilterChain().addFirst("binaryCodec", new ProtocolCodecFilter(new HessianEncoder(), new HessianDecoder()));
 		// 处理接收的命令和响应
 		connector.setHandler(new AbstractCommandHandler() {
@@ -31,9 +32,10 @@ public class ClientMain {
 
 			@Override
 			protected Object processCommand(Object command) {
+				System.out.println("received command [" + command + "]");
 				return null;
 			}
-			
+
 			@Override
 			public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
 				session.close(true);
@@ -50,6 +52,7 @@ public class ClientMain {
 				@Override
 				public void commandResponse(String command, String response) {
 					System.out.println(command + " response[" + response + "]");
+					CommandContext.getCommandSender().sendCommand("send command after response [" + command + "]");
 				}
 
 				@Override
@@ -57,9 +60,10 @@ public class ClientMain {
 					System.out.println(command + " timeout");
 				}
 			});
+			// 收取响应
+			Thread.sleep(1000);
 			sender.sendCommand("quit");
 			session.getCloseFuture().awaitUninterruptibly();
-			// 收取响应
 			Thread.sleep(500);
 		} catch (Exception e) {
 			e.printStackTrace();
