@@ -6,7 +6,6 @@ import org.apache.mina.core.session.IoSession;
 import com.raddle.nio.mina.cmd.CommandBodyWrapper;
 import com.raddle.nio.mina.cmd.CommandContext;
 import com.raddle.nio.mina.cmd.ResponseWaiting;
-import com.raddle.nio.mina.cmd.SessionCommandSender;
 
 public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 
@@ -16,7 +15,7 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 			CommandBodyWrapper wrapper = (CommandBodyWrapper) message;
 			Object body = wrapper.getBody();
 			try {
-				CommandContext.setCommandSender(new SessionCommandSender(session));
+				CommandContext.setIoSession(session);
 				if (wrapper.isRequest()) {
 					Object result = processCommand(body);
 					if (result != null) {
@@ -26,7 +25,7 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 					ResponseWaiting.responseReceived(wrapper.getId(), body);
 				}
 			} finally {
-				CommandContext.setCommandSender(null);
+				CommandContext.clear();
 			}
 		}
 	}
