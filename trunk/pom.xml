@@ -4,7 +4,7 @@
   <groupId>com.raddle.nio</groupId>
   <artifactId>nio-command</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.0-SANPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>${project.artifactId} v${project.version}</name>
   <url>http://maven.apache.org</url>
   <build>
