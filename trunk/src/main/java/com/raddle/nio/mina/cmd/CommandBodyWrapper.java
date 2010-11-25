@@ -18,6 +18,7 @@ public class CommandBodyWrapper implements Serializable {
 	private String id;
 	private boolean request;
 	private boolean exception = false;
+	private boolean requireResponse = false;
 
 	public CommandBodyWrapper(String id, boolean request, Object body) {
 		this.id = id;
@@ -58,6 +59,14 @@ public class CommandBodyWrapper implements Serializable {
 
 	public void setException(boolean exception) {
 		this.exception = exception;
+	}
+
+	public boolean isRequireResponse() {
+		return requireResponse;
+	}
+
+	public void setRequireResponse(boolean requireResponse) {
+		this.requireResponse = requireResponse;
 	}
 
 }

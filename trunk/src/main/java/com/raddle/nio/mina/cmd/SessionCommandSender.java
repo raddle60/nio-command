@@ -29,6 +29,7 @@ public class SessionCommandSender implements CommandSender {
 	@Override
 	public <C, R> void sendCommand(C command, CommandCallback<C, R> callback) {
 		CommandBodyWrapper wrapper = new CommandBodyWrapper(UUID.randomUUID().toString(), true, command);
+		wrapper.setRequireResponse(true);
 		ResponseWaiting.addWaiting(wrapper.getId(), command, DEFAULT_TIMEOUT, callback);
 		session.write(wrapper);
 	}
@@ -36,6 +37,7 @@ public class SessionCommandSender implements CommandSender {
 	@Override
 	public <C, R> void sendCommand(C command, int timeoutSeconds, CommandCallback<C, R> callback) {
 		CommandBodyWrapper wrapper = new CommandBodyWrapper(UUID.randomUUID().toString(), true, command);
+		wrapper.setRequireResponse(true);
 		ResponseWaiting.addWaiting(wrapper.getId(), command, timeoutSeconds, callback);
 		session.write(wrapper);
 	}
