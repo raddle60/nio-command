@@ -17,7 +17,7 @@ public class CommandBodyWrapper implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private boolean request;
-
+	private boolean exception = false;
 
 	public CommandBodyWrapper(String id, boolean request, Object body) {
 		this.id = id;
@@ -49,6 +49,15 @@ public class CommandBodyWrapper implements Serializable {
 
 	public void setBody(Object body) {
 		this.body = body;
+	}
+	
+
+	public boolean isException() {
+		return exception;
+	}
+
+	public void setException(boolean exception) {
+		this.exception = exception;
 	}
 
 }

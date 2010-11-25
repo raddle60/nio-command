@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.LoggerFactory;
 
 import com.raddle.nio.mina.cmd.api.CommandCallback;
+import com.raddle.nio.mina.exception.ExceptionWrapper;
 
 /**
  * @author xurong
@@ -76,6 +77,20 @@ public class ResponseWaiting {
 			WaitingItem item = waitingMap.get(commandId);
 			waitingMap.remove(commandId);
 			item.getCallback().commandResponse(item.getCommand(), response);
+		}
+	}
+	
+	/**
+	 * 收到了异常
+	 * @param commandId
+	 * @param exception
+	 */
+	@SuppressWarnings("unchecked")
+	public static void exceptionReceived(String commandId, ExceptionWrapper exception) {
+		if (waitingMap.containsKey(commandId)) {
+			WaitingItem item = waitingMap.get(commandId);
+			waitingMap.remove(commandId);
+			item.getCallback().responseException(item.getCommand(), exception.getType(), exception.getMessage());
 		}
 	}
 

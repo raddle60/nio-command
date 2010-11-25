@@ -59,6 +59,30 @@ public class ClientMain {
 				public void responseTimeout(String command) {
 					System.out.println(command + " timeout");
 				}
+
+				@Override
+				public void responseException(String command, String type, String message) {
+					System.out.println(command + " exception : " + type + " , " + message);
+				}
+			});
+			
+			sender.sendCommand("exception", new CommandCallback<String, String>() {
+				
+				@Override
+				public void commandResponse(String command, String response) {
+					System.out.println(command + " response[" + response + "]");
+					CommandContext.getCommandSender().sendCommand("send command after response [" + command + "]");
+				}
+				
+				@Override
+				public void responseTimeout(String command) {
+					System.out.println(command + " timeout");
+				}
+				
+				@Override
+				public void responseException(String command, String type, String message) {
+					System.out.println(command + " exception : " + type + " , " + message);
+				}
 			});
 			// 收取响应
 			Thread.sleep(1000);
@@ -72,6 +96,11 @@ public class ClientMain {
 				@Override
 				public void responseTimeout(String command) {
 					System.out.println(command + " response timeout");
+				}
+
+				@Override
+				public void responseException(String command, String type, String message) {
+					System.out.println(command + " exception : " + type + " , " + message);
 				}
 			});
 			session.getCloseFuture().awaitUninterruptibly();

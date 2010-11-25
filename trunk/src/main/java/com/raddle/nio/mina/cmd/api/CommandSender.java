@@ -43,4 +43,12 @@ public interface CommandSender {
 	 * @param response
 	 */
 	public void sendResponse(String commandId, Object response);
+	
+	/**
+	 * 发送异常响应
+	 * 
+	 * @param commandId
+	 * @param exception
+	 */
+	public void sendExceptionResponse(String commandId, Exception exception);
 }
