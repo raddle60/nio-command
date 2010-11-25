@@ -12,6 +12,7 @@ import com.raddle.nio.mina.exception.ExceptionWrapper;
 
 public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	@Override
 	public void messageReceived(IoSession session, Object message) throws Exception {
 		if (message != null && message instanceof CommandBodyWrapper) {
@@ -24,14 +25,16 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 						Object result = processCommand(body);
 						if (result != null) {
 							CommandContext.getCommandSender().sendResponse(wrapper.getId(), result);
+						} else if (wrapper.isRequireResponse()) {
+							CommandContext.getCommandSender().sendResponse(wrapper.getId(), null);
 						}
 					} catch (Exception e) {
 						logger.error(e.getMessage(), e);
 						CommandContext.getCommandSender().sendExceptionResponse(wrapper.getId(), e);
 					}
 				} else {
-					if(wrapper.isException()){
-						ResponseWaiting.exceptionReceived(wrapper.getId(), (ExceptionWrapper)body);
+					if (wrapper.isException()) {
+						ResponseWaiting.exceptionReceived(wrapper.getId(), (ExceptionWrapper) body);
 					} else {
 						ResponseWaiting.responseReceived(wrapper.getId(), body);
 					}
@@ -48,6 +51,6 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 	 * @param command
 	 * @return 处理结果,null不发送数据给client
 	 */
-	protected abstract Object processCommand(Object command);
+	protected abstract Object processCommand(Object command) throws Exception;
 
 }

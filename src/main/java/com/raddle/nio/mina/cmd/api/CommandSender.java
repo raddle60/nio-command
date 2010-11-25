@@ -9,7 +9,7 @@ package com.raddle.nio.mina.cmd.api;
  */
 public interface CommandSender {
 	/**
-	 * 发送命令
+	 * 发送命令,默认超时时间
 	 * 
 	 * @param <C>
 	 * @param <R>
