@@ -15,6 +15,14 @@ public interface CommandCallback<C, R> {
 	 * @param response
 	 */
 	public void commandResponse(C command, R response);
+	
+	/**
+	 * 命令响应异常
+	 * @param command
+	 * @param type
+	 * @param message
+	 */
+	public void responseException(C command, String type, String message);
 
 	/**
 	 * 命令响应超时

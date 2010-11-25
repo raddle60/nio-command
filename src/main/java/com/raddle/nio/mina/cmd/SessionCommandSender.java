@@ -9,6 +9,7 @@ import org.apache.mina.core.session.IoSession;
 
 import com.raddle.nio.mina.cmd.api.CommandCallback;
 import com.raddle.nio.mina.cmd.api.CommandSender;
+import com.raddle.nio.mina.exception.ExceptionWrapper;
 
 /**
  * @author xurong
@@ -48,6 +49,13 @@ public class SessionCommandSender implements CommandSender {
 	@Override
 	public void sendResponse(String commandId, Object response) {
 		CommandBodyWrapper wrapper = new CommandBodyWrapper(commandId, false, response);
+		session.write(wrapper);
+	}
+
+	@Override
+	public void sendExceptionResponse(String commandId, Exception exception) {
+		CommandBodyWrapper wrapper = new CommandBodyWrapper(commandId, false, new ExceptionWrapper(exception.getClass().getName(), exception.getMessage()));
+		wrapper.setException(true);
 		session.write(wrapper);
 	}
 

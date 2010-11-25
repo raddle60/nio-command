@@ -36,6 +36,8 @@ public class ServerMain {
 					System.out.println("command [" + command + "] received");
 					bool.value = true;
 					return null;
+				} else if ("exception".equals(command)){
+					throw new UnsupportedOperationException("manual");
 				} else {
 					System.out.println("command [" + command + "] received");
 					// CommandContext.getCommandSender() is current session
