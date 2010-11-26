@@ -23,7 +23,7 @@ public abstract class AbstractInvokeCommandHandler extends AbstractCommandHandle
 			if (target == null) {
 				throw new IllegalArgumentException("没有id为[" + invokeCommand.getTargetId() + "]的对象");
 			}
-			return invokeMethod(new MethodInvoke(target, invokeCommand.getMethod(), invokeCommand.getArgs()));
+			return invokeMethod(new MethodInvoke(invokeCommand.getTargetId(), target, invokeCommand.getMethod(), invokeCommand.getArgs()));
 		}
 		return null;
 	}
