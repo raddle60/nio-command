@@ -36,7 +36,8 @@ public abstract class AbstractInvokeCommandHandler extends AbstractCommandHandle
 	protected String getExecuteQueue(Object command) {
 		if (command != null && command instanceof InvokeCommand) {
 			InvokeCommand invokeCommand = (InvokeCommand) command;
-			return getExecuteQueue(invokeCommand);
+			Object target = getObject(invokeCommand.getTargetId());
+			return getCommandQueue(new MethodInvoke(invokeCommand.getTargetId(), target, invokeCommand.getMethod(), invokeCommand.getArgs()));
 		}
 		return null;
 	}
@@ -52,6 +53,6 @@ public abstract class AbstractInvokeCommandHandler extends AbstractCommandHandle
 	 * @param methodInvoke
 	 * @return  null不再队列中执行，将并发执行。非null，在指定的队列中执行
 	 */
-	abstract protected Object getExecuteQueue(MethodInvoke methodInvoke);
+	abstract protected String getCommandQueue(MethodInvoke methodInvoke);
 
 }
