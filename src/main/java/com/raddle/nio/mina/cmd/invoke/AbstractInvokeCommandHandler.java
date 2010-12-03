@@ -31,10 +31,27 @@ public abstract class AbstractInvokeCommandHandler extends AbstractCommandHandle
 	public void putObject(String id, Object target) {
 		objectMap.put(id, target);
 	}
-
+	
+	@Override
+	protected String getExecuteQueue(Object command) {
+		if (command != null && command instanceof InvokeCommand) {
+			InvokeCommand invokeCommand = (InvokeCommand) command;
+			return getExecuteQueue(invokeCommand);
+		}
+		return null;
+	}
+	
 	protected Object getObject(String id) {
 		return objectMap.get(id);
 	}
 
 	abstract protected Object invokeMethod(MethodInvoke methodInvoke) throws Exception;
+	
+	/**
+	 * 获得执行队列，返回null将并发执行。每个队列是个独立线程，队列中的任务按顺序同步执行
+	 * @param methodInvoke
+	 * @return  null不再队列中执行，将并发执行。非null，在指定的队列中执行
+	 */
+	abstract protected Object getExecuteQueue(MethodInvoke methodInvoke);
+
 }

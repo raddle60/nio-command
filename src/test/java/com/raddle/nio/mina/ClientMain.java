@@ -40,6 +40,11 @@ public class ClientMain {
 			public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
 				session.close(true);
 			}
+
+			@Override
+			protected String getExecuteQueue(Object command) {
+				return null;
+			}
 		});
 		ConnectFuture future = connector.connect(new InetSocketAddress("127.0.0.1", 12563));
 		future.awaitUninterruptibly();
