@@ -1,6 +1,9 @@
 package com.raddle.nio.mina.cmd.handler;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,20 +22,17 @@ import com.raddle.nio.mina.exception.ExceptionWrapper;
 
 public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-	protected boolean isConcurrent = true;
 	protected int maxTaskThreads = 10;
 	protected ExecutorService executorService = null;
+	protected Map<String, ExecutorService> queueMap = new HashMap<String, ExecutorService>();
 
 	@Override
 	public void messageReceived(final IoSession session, final Object message) throws Exception {
-		if(isConcurrent && executorService == null){
-			synchronized (this) {
-				if(executorService == null){
-					executorService = new ThreadPoolExecutor(0, maxTaskThreads, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>() , new DaemonThreadFactory());
-				}
-			}
+		if(executorService == null){
+			executorService = new ThreadPoolExecutor(0, maxTaskThreads, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>() , new DaemonThreadFactory());
 		}
-		if(isConcurrent){
+		String queueName = getExecuteQueue();
+		if(queueName == null){
 			executorService.execute(new Runnable() {
 				@Override
 				public void run() {
@@ -40,7 +40,17 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 				}
 			});
 		} else {
-			processMessage(session, message);
+			ExecutorService queueExecutor = queueMap.get(queueName);
+			if(queueExecutor == null){
+				queueExecutor = Executors.newSingleThreadExecutor(new DaemonThreadFactory());
+				queueMap.put(queueName, queueExecutor);
+			}
+			queueExecutor.execute(new Runnable() {
+				@Override
+				public void run() {
+					processMessage(session, message);
+				}
+			});
 		}
 	}
 
@@ -76,6 +86,12 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 	}
 
 	/**
+	 * 获得执行队列，返回null将并发执行。每个队列是个独立线程，队列中的任务按顺序同步执行
+	 * @return null不再队列中执行，将并发执行。非null，在指定的队列中执行
+	 */
+	protected abstract String getExecuteQueue();
+	
+	/**
 	 * 处理命令
 	 * 
 	 * @param command
@@ -108,5 +124,13 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
             return t;
         }
     }
+
+	public int getMaxTaskThreads() {
+		return maxTaskThreads;
+	}
+
+	public void setMaxTaskThreads(int maxTaskThreads) {
+		this.maxTaskThreads = maxTaskThreads;
+	}
 
 }
