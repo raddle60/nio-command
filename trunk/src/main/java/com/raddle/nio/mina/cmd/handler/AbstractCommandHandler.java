@@ -28,68 +28,69 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 
 	@Override
 	public void messageReceived(final IoSession session, final Object message) throws Exception {
-		if(executorService == null){
-			executorService = new ThreadPoolExecutor(0, maxTaskThreads, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>() , new DaemonThreadFactory());
-		}
-		String queueName = getExecuteQueue();
-		if(queueName == null){
-			executorService.execute(new Runnable() {
-				@Override
-				public void run() {
-					processMessage(session, message);
-				}
-			});
-		} else {
-			ExecutorService queueExecutor = queueMap.get(queueName);
-			if(queueExecutor == null){
-				queueExecutor = Executors.newSingleThreadExecutor(new DaemonThreadFactory());
-				queueMap.put(queueName, queueExecutor);
+		if (message != null && message instanceof CommandBodyWrapper) {
+			final CommandBodyWrapper wrapper = (CommandBodyWrapper) message;
+			if(executorService == null){
+				executorService = new ThreadPoolExecutor(0, maxTaskThreads, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>() , new DaemonThreadFactory());
 			}
-			queueExecutor.execute(new Runnable() {
-				@Override
-				public void run() {
-					processMessage(session, message);
+			String queueName = getExecuteQueue(wrapper.getBody());
+			if(queueName == null){
+				executorService.execute(new Runnable() {
+					@Override
+					public void run() {
+						processMessage(session, wrapper);
+					}
+				});
+			} else {
+				ExecutorService queueExecutor = queueMap.get(queueName);
+				if(queueExecutor == null){
+					queueExecutor = Executors.newSingleThreadExecutor(new DaemonThreadFactory());
+					queueMap.put(queueName, queueExecutor);
 				}
-			});
+				queueExecutor.execute(new Runnable() {
+					@Override
+					public void run() {
+						processMessage(session, wrapper);
+					}
+				});
+			}
 		}
 	}
 
-	private void processMessage(final IoSession session, final Object message) {
-		if (message != null && message instanceof CommandBodyWrapper) {
-			CommandBodyWrapper wrapper = (CommandBodyWrapper) message;
-			Object body = wrapper.getBody();
-			try {
-				CommandContext.setIoSession(session);
-				if (wrapper.isRequest()) {
-					try {
-						Object result = processCommand(body);
-						if (result != null) {
-							CommandContext.getCommandSender().sendResponse(wrapper.getId(), result);
-						} else if (wrapper.isRequireResponse()) {
-							CommandContext.getCommandSender().sendResponse(wrapper.getId(), null);
-						}
-					} catch (Exception e) {
-						logger.error(e.getMessage(), e);
-						CommandContext.getCommandSender().sendExceptionResponse(wrapper.getId(), e);
+	private void processMessage(final IoSession session, final CommandBodyWrapper wrapper) {
+		Object body = wrapper.getBody();
+		try {
+			CommandContext.setIoSession(session);
+			if (wrapper.isRequest()) {
+				try {
+					Object result = processCommand(body);
+					if (result != null) {
+						CommandContext.getCommandSender().sendResponse(wrapper.getId(), result);
+					} else if (wrapper.isRequireResponse()) {
+						CommandContext.getCommandSender().sendResponse(wrapper.getId(), null);
 					}
-				} else {
-					if (wrapper.isException()) {
-						ResponseWaiting.exceptionReceived(wrapper.getId(), (ExceptionWrapper) body);
-					} else {
-						ResponseWaiting.responseReceived(wrapper.getId(), body);
-					}
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
+					CommandContext.getCommandSender().sendExceptionResponse(wrapper.getId(), e);
 				}
-			} finally {
-				CommandContext.clear();
+			} else {
+				if (wrapper.isException()) {
+					ResponseWaiting.exceptionReceived(wrapper.getId(), (ExceptionWrapper) body);
+				} else {
+					ResponseWaiting.responseReceived(wrapper.getId(), body);
+				}
 			}
+		} finally {
+			CommandContext.clear();
 		}
 	}
 
 	/**
 	 * 获得执行队列，返回null将并发执行。每个队列是个独立线程，队列中的任务按顺序同步执行
-	 * @return null不再队列中执行，将并发执行。非null，在指定的队列中执行
+	 * @param command
+	 * @return  null不再队列中执行，将并发执行。非null，在指定的队列中执行
 	 */
-	protected abstract String getExecuteQueue();
+	protected abstract String getExecuteQueue(Object command);
 	
 	/**
 	 * 处理命令

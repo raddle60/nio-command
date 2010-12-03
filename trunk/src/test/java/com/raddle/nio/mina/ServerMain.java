@@ -60,6 +60,11 @@ public class ServerMain {
 				session.close(true);
 			}
 
+			@Override
+			protected String getExecuteQueue(Object command) {
+				return null;
+			}
+
 		});
 		try {
 			boolean bound = false;
