@@ -154,7 +154,6 @@ public class ResponseWaiting {
 
 	// modify from Executors > DefaultThreadFactory
 	static class DaemonThreadFactory implements ThreadFactory {
-		static final AtomicInteger poolNumber = new AtomicInteger(1);
 		final ThreadGroup group;
 		final AtomicInteger threadNumber = new AtomicInteger(1);
 		final String namePrefix;
@@ -162,7 +161,7 @@ public class ResponseWaiting {
 		DaemonThreadFactory() {
 			SecurityManager s = System.getSecurityManager();
 			group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-			namePrefix = "daemon-pool-" + poolNumber.getAndIncrement() + "-thread-";
+			namePrefix = "daemon-rs-waiting-thread-";
 		}
 
 		public Thread newThread(Runnable r) {
