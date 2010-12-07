@@ -101,7 +101,6 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 	protected abstract Object processCommand(Object command) throws Exception;
 	
     static class DaemonThreadFactory implements ThreadFactory {
-        static final AtomicInteger poolNumber = new AtomicInteger(1);
         final ThreadGroup group;
         final AtomicInteger threadNumber = new AtomicInteger(1);
         final String namePrefix;
@@ -110,9 +109,7 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
             SecurityManager s = System.getSecurityManager();
             group = (s != null)? s.getThreadGroup() :
                                  Thread.currentThread().getThreadGroup();
-            namePrefix = "daemon-pool-" +
-                          poolNumber.getAndIncrement() +
-                         "-thread-";
+            namePrefix = "daemon-cmdhandler-thread-";
         }
 
         public Thread newThread(Runnable r) {
@@ -132,6 +129,15 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 
 	public void setMaxTaskThreads(int maxTaskThreads) {
 		this.maxTaskThreads = maxTaskThreads;
+	}
+	
+	public void dispose(){
+		if(executorService != null){
+			executorService.shutdown();
+		}
+		for (ExecutorService service : queueMap.values()) {
+			service.shutdown();
+		}
 	}
 
 }
