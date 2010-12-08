@@ -61,7 +61,8 @@ public class SessionCommandSender implements CommandSender {
 		// 等待结果返回
 		synchronized (result) {
 			try {
-				result.wait(timeoutSeconds * 1000);
+				// 多等1.5秒，responseTimeout应该在这超时之前发生
+				result.wait(timeoutSeconds * 1000 + 1500);
 			} catch (InterruptedException e) {
 				throw new WaitingTimeoutException("waiting for result interrupted", e);
 			}
