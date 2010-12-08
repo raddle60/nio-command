@@ -52,7 +52,7 @@ public class ClientMain {
 		try {
 			session = future.getSession();
 			CommandSender sender = new SessionCommandSender(session);
-			sender.sendCommand("command:" + System.currentTimeMillis(), new CommandCallback<String, String>() {
+			sender.sendCommand("command:" + System.currentTimeMillis(), 10, new CommandCallback<String, String>() {
 
 				@Override
 				public void commandResponse(String command, String response) {
@@ -71,7 +71,7 @@ public class ClientMain {
 				}
 			});
 			
-			sender.sendCommand("exception", new CommandCallback<String, String>() {
+			sender.sendCommand("exception",10 ,new CommandCallback<String, String>() {
 				
 				@Override
 				public void commandResponse(String command, String response) {
