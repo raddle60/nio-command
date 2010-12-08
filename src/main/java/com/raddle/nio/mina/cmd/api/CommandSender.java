@@ -3,20 +3,25 @@
  */
 package com.raddle.nio.mina.cmd.api;
 
+import com.raddle.nio.mina.exception.ReceivedClientException;
+import com.raddle.nio.mina.exception.WaitingTimeoutException;
+
 /**
  * @author xurong
  * 
  */
 public interface CommandSender {
 	/**
-	 * 发送命令,默认超时时间
-	 * 
+	 * 发送命令, 同步等待返回结果
 	 * @param <C>
 	 * @param <R>
 	 * @param command
-	 * @param callback
+	 * @param timeoutSeconds
+	 * @return
+	 * @throws WaitingTimeoutException 等待返回超时
+	 * @throws ReceivedClientException 客户端返回的结果为异常对象
 	 */
-	public <C, R> void sendCommand(C command, CommandCallback<C, R> callback);
+	public <C, R> R sendSyncCommand(C command, int timeoutSeconds) throws WaitingTimeoutException, ReceivedClientException;
 
 	/**
 	 * 发送命令
