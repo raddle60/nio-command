@@ -22,7 +22,7 @@ public abstract class AbstractBinaryDecoder extends CumulativeProtocolDecoder {
 		return false;
 	}
 
-	private void watingForHeader(IoSession session, IoBuffer in, ProtocolDecoderOutput out, ProcessInfo info) {
+	private void watingForHeader(IoSession session, IoBuffer in, ProtocolDecoderOutput out, ProcessInfo info) throws Exception {
 		if (in.remaining() >= 6) {
 			// 標誌
 			short flag = in.getShort();
@@ -51,7 +51,7 @@ public abstract class AbstractBinaryDecoder extends CumulativeProtocolDecoder {
 		}
 	}
 
-	private void processRemainHeaders(IoSession session, IoBuffer in, ProcessInfo info ,ProtocolDecoderOutput out) {
+	private void processRemainHeaders(IoSession session, IoBuffer in, ProcessInfo info ,ProtocolDecoderOutput out) throws Exception  {
 		if (in.remaining() >= info.getWaitingHeaderBytes()) {
 			byte encodeType = in.get();
 			long bodyBytes = in.getLong();
@@ -63,7 +63,7 @@ public abstract class AbstractBinaryDecoder extends CumulativeProtocolDecoder {
 		}
 	}
 
-	private boolean processBody(IoSession session, IoBuffer in, ProcessInfo info ,ProtocolDecoderOutput out) {
+	private boolean processBody(IoSession session, IoBuffer in, ProcessInfo info ,ProtocolDecoderOutput out) throws Exception {
 		if (in.remaining() >= info.getWaitingBodyBytes()) {
 			try {
 				if(info.getWaitingBodyBytes() == 0){
@@ -84,7 +84,7 @@ public abstract class AbstractBinaryDecoder extends CumulativeProtocolDecoder {
 		return false;
 	}
 
-	protected abstract Object decodeBody(byte encodeType, IoBuffer ioBuffer);
+	protected abstract Object decodeBody(byte encodeType, IoBuffer ioBuffer) throws Exception ;
 
 	public ProcessInfo getProcessInfo(IoSession session) {
 		if (session.getAttribute(PROCESS) != null) {
