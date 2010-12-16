@@ -44,5 +44,5 @@ public abstract class AbstractBinaryEncoder implements ProtocolEncoder {
 		}
 	}
 
-	abstract protected BinaryEncodedResult encodedObject(Object message);
+	abstract protected BinaryEncodedResult encodedObject(Object message) throws Exception ;
 }
