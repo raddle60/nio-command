@@ -1,16 +1,16 @@
 package com.raddle.nio.mina.cmd.invoke;
 
-public class MethodInvoke {
+public class InvokeMethod {
 	private String targetId;
 	private Object target;
 	private String method;
 	private Object[] args;
 
-	public MethodInvoke() {
+	public InvokeMethod() {
 		
 	}
 	
-	public MethodInvoke(String targetId, Object target, String method, Object[] args) {
+	public InvokeMethod(String targetId, Object target, String method, Object[] args) {
 		this.targetId = targetId;
 		this.target = target;
 		this.method = method;
