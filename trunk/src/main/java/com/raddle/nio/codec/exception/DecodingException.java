@@ -1,13 +1,13 @@
 /**
  * 
  */
-package com.raddle.nio.mina.exception;
+package com.raddle.nio.codec.exception;
 
 /**
  * @author xurong
  *
  */
-public class EncodingException extends RuntimeException {
+public class DecodingException extends RuntimeException {
 
 	/**
 	 * 
@@ -17,20 +17,20 @@ public class EncodingException extends RuntimeException {
 	/**
 	 * 
 	 */
-	public EncodingException() {
+	public DecodingException() {
 	}
 
 	/**
 	 * @param message
 	 */
-	public EncodingException(String message) {
+	public DecodingException(String message) {
 		super(message);
 	}
 
 	/**
 	 * @param cause
 	 */
-	public EncodingException(Throwable cause) {
+	public DecodingException(Throwable cause) {
 		super(cause);
 	}
 
@@ -38,7 +38,7 @@ public class EncodingException extends RuntimeException {
 	 * @param message
 	 * @param cause
 	 */
-	public EncodingException(String message, Throwable cause) {
+	public DecodingException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
