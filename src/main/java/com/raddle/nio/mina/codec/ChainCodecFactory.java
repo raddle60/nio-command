@@ -27,7 +27,6 @@ import com.raddle.nio.mina.binary.BinaryEncodedResult;
  * 
  */
 public class ChainCodecFactory implements ProtocolCodecFactory {
-	public static final String ENCODED_TYPE = "encoded_type";
 	private NioCodecChainImpl chain = new NioCodecChainImpl();
 
 	@Override
@@ -38,11 +37,7 @@ public class ChainCodecFactory implements ProtocolCodecFactory {
 				NioCodecContext context = new NioCodecContextImpl();
 				Object encoded = chain.encode(context, message);
 				BinaryEncodedResult result = new BinaryEncodedResult();
-				if (context.getAttribute(ENCODED_TYPE) != null) {
-					result.setEncodedType(((Number) context.getAttribute(ENCODED_TYPE)).byteValue());
-				} else {
-					result.setEncodedType((byte)0);
-				}
+				result.setEncodedType((byte) 0);
 				if (encoded == null) {
 					result.setEncodedObject(null);
 					result.setEncodedBytes(0);
