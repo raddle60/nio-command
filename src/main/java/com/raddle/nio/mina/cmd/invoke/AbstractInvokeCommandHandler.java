@@ -23,7 +23,7 @@ public abstract class AbstractInvokeCommandHandler extends AbstractCommandHandle
 			if (target == null) {
 				throw new IllegalArgumentException("没有id为[" + invokeCommand.getTargetId() + "]的对象");
 			}
-			return invokeMethod(new MethodInvoke(invokeCommand.getTargetId(), target, invokeCommand.getMethod(), invokeCommand.getArgs()));
+			return invokeMethod(new InvokeMethod(invokeCommand.getTargetId(), target, invokeCommand.getMethod(), invokeCommand.getArgs()));
 		}
 		return null;
 	}
@@ -37,7 +37,7 @@ public abstract class AbstractInvokeCommandHandler extends AbstractCommandHandle
 		if (command != null && command instanceof InvokeCommand) {
 			InvokeCommand invokeCommand = (InvokeCommand) command;
 			Object target = getObject(invokeCommand.getTargetId());
-			return getCommandQueue(new MethodInvoke(invokeCommand.getTargetId(), target, invokeCommand.getMethod(), invokeCommand.getArgs()));
+			return getCommandQueue(new InvokeMethod(invokeCommand.getTargetId(), target, invokeCommand.getMethod(), invokeCommand.getArgs()));
 		}
 		return null;
 	}
@@ -46,13 +46,13 @@ public abstract class AbstractInvokeCommandHandler extends AbstractCommandHandle
 		return objectMap.get(id);
 	}
 
-	abstract protected Object invokeMethod(MethodInvoke methodInvoke) throws Exception;
+	abstract protected Object invokeMethod(InvokeMethod methodInvoke) throws Exception;
 	
 	/**
 	 * 获得执行队列，返回null将并发执行。每个队列是个独立线程，队列中的任务按顺序同步执行
 	 * @param methodInvoke
 	 * @return  null不再队列中执行，将并发执行。非null，在指定的队列中执行
 	 */
-	abstract protected String getCommandQueue(MethodInvoke methodInvoke);
+	abstract protected String getCommandQueue(InvokeMethod methodInvoke);
 
 }
