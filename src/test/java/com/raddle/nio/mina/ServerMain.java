@@ -30,7 +30,7 @@ public class ServerMain {
 		chainCodecFactory.addFirst(new HessianCodec());
 		acceptor.getFilterChain().addFirst("codec", new ProtocolCodecFilter(chainCodecFactory));
 		// 处理接收的命令和响应
-		acceptor.setHandler(new AbstractCommandHandler() {
+		AbstractCommandHandler handler = new AbstractCommandHandler() {
 
 			@Override
 			protected Object processCommand(Object command) {
@@ -67,7 +67,8 @@ public class ServerMain {
 				return null;
 			}
 
-		});
+		};
+		acceptor.setHandler(handler);
 		try {
 			boolean bound = false;
 			while (!bound) {
@@ -84,12 +85,15 @@ public class ServerMain {
 				Thread.sleep(500);
 			}
 			// 不能在handler里调用，socket会无法关闭
+			System.out.println("shuting down server ");
 			acceptor.unbind();
+			handler.dispose();
 			acceptor.dispose();
 			System.out.println("MINA server shutdown");
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("MINA server shutdown");
+			handler.dispose();
 			acceptor.dispose();
 		}
 	}

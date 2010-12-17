@@ -24,8 +24,7 @@ public class ClientMain {
 		ChainCodecFactory chainCodecFactory = new ChainCodecFactory();
 		chainCodecFactory.addFirst(new HessianCodec());
 		connector.getFilterChain().addFirst("codec", new ProtocolCodecFilter(chainCodecFactory));
-		// 处理接收的命令和响应
-		connector.setHandler(new AbstractCommandHandler() {
+		AbstractCommandHandler handler = new AbstractCommandHandler() {
 			@Override
 			public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
 				cause.printStackTrace();
@@ -47,7 +46,9 @@ public class ClientMain {
 			protected String getExecuteQueue(Object command) {
 				return null;
 			}
-		});
+		};
+		// 处理接收的命令和响应
+		connector.setHandler(handler);
 		ConnectFuture future = connector.connect(new InetSocketAddress("127.0.0.1", 12563));
 		future.awaitUninterruptibly();
 		IoSession session;
@@ -116,6 +117,7 @@ public class ClientMain {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		handler.dispose();
 		connector.dispose();
 	}
 }
