@@ -28,12 +28,12 @@ public abstract class AbstractBinaryEncoder implements ProtocolEncoder {
             return;
         }
 		BinaryEncodedResult result = encodedObject(message);
-		IoBuffer buf = IoBuffer.allocate(15);
+		IoBuffer buf = IoBuffer.allocate(11);
 		buf.putShort(Short.MAX_VALUE);// 起始標誌
 		buf.putShort((short) 1);// 版本
-		buf.putShort((short) 15);// head長度=起始標誌(2)+版本(2)+head(2)+編碼規則(1)+body長度(8)
+		buf.putShort((short) 11);// head長度=起始標誌(2)+版本(2)+head(2)+編碼規則(1)+body長度(4)
 		buf.put(result.getEncodedType());// 編碼規則
-		buf.putLong(result.getEncodedBytes());// body長度
+		buf.putInt(result.getEncodedBytes());// body長度
 		buf.flip();
 		synchronized (session) {
 			// 防止併發，保證header和body連續寫入

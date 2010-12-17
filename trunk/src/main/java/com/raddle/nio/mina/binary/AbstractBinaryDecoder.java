@@ -54,7 +54,7 @@ public abstract class AbstractBinaryDecoder extends CumulativeProtocolDecoder {
 	private void processRemainHeaders(IoSession session, IoBuffer in, ProcessInfo info ,ProtocolDecoderOutput out) throws Exception  {
 		if (in.remaining() >= info.getWaitingHeaderBytes()) {
 			byte encodeType = in.get();
-			long bodyBytes = in.getLong();
+			int bodyBytes = in.getInt();
 			info.setEncodeType(encodeType);
 			info.setWaitingBodyBytes(bodyBytes);
 			info.setProcessHeader(false);
