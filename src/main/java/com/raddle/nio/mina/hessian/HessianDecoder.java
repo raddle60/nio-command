@@ -9,8 +9,8 @@ import org.apache.mina.core.buffer.IoBuffer;
 
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.SerializerFactory;
+import com.raddle.nio.codec.exception.DecodingException;
 import com.raddle.nio.mina.binary.AbstractBinaryDecoder;
-import com.raddle.nio.mina.exception.DecodingException;
 
 /**
  * @author xurong

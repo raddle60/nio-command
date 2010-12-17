@@ -43,7 +43,7 @@ public class NioCodecChainImpl implements NioCodecChain {
 		if (encoderIterator.hasNext()) {
 			return encoderIterator.next().encode(context, this, preEncoded);
 		}
-		return null;
+		return preEncoded;
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class NioCodecChainImpl implements NioCodecChain {
 		if (decoderIterator.hasNext()) {
 			return decoderIterator.next().decode(context, this, preDecoded, remainBytes);
 		}
-		return null;
+		return preDecoded;
 	}
 
 	public Object encode(NioCodecContext context, Object preEncoded) throws Exception {
@@ -63,5 +63,5 @@ public class NioCodecChainImpl implements NioCodecChain {
 		decoderIterator = codecChain.descendingIterator();
 		return nextDecode(context, preDecoded, remainBytes);
 	}
-	
+
 }
