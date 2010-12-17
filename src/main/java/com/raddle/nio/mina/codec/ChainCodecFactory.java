@@ -28,48 +28,51 @@ import com.raddle.nio.mina.binary.BinaryEncodedResult;
  */
 public class ChainCodecFactory implements ProtocolCodecFactory {
 	private NioCodecChainImpl chain = new NioCodecChainImpl();
+	private ProtocolEncoder encoder = new AbstractBinaryEncoder() {
+		@Override
+		protected BinaryEncodedResult encodedObject(Object message) throws Exception {
+			NioCodecContext context = new NioCodecContextImpl();
+			Object encoded = chain.encode(context, message);
+			BinaryEncodedResult result = new BinaryEncodedResult();
+			result.setEncodedType((byte) 0);
+			if (encoded == null) {
+				result.setEncodedObject(null);
+				result.setEncodedBytes(0);
+			} else {
+				if (encoded instanceof byte[]) {
+					result.setEncodedBytes(Array.getLength(encoded));
+					result.setEncodedObject(IoBuffer.wrap((byte[]) encoded));
+				} else if (encoded instanceof ByteBuffer) {
+					IoBuffer buffer = IoBuffer.wrap((ByteBuffer) encoded);
+					result.setEncodedBytes(buffer.remaining());
+					result.setEncodedObject(buffer);
+				} else if (encoded instanceof IoBuffer) {
+					result.setEncodedBytes(((IoBuffer) encoded).remaining());
+					result.setEncodedObject(encoded);
+				} else {
+					throw new RuntimeException("unsupported result type [" + encoded.getClass() + "]");
+				}
+			}
+			return result;
+		}
+	};
+
+	private ProtocolDecoder decoder = new AbstractBinaryDecoder() {
+		@Override
+		protected Object decodeBody(byte encodeType, IoBuffer ioBuffer) throws Exception {
+			NioCodecContext context = new NioCodecContextImpl();
+			return chain.decode(context, null, ioBuffer.buf());
+		}
+	};
 
 	@Override
 	public ProtocolEncoder getEncoder(IoSession session) throws Exception {
-		return new AbstractBinaryEncoder() {
-			@Override
-			protected BinaryEncodedResult encodedObject(Object message) throws Exception {
-				NioCodecContext context = new NioCodecContextImpl();
-				Object encoded = chain.encode(context, message);
-				BinaryEncodedResult result = new BinaryEncodedResult();
-				result.setEncodedType((byte) 0);
-				if (encoded == null) {
-					result.setEncodedObject(null);
-					result.setEncodedBytes(0);
-				} else {
-					if (encoded instanceof byte[]) {
-						result.setEncodedBytes(Array.getLength(encoded));
-						result.setEncodedObject(IoBuffer.wrap((byte[]) encoded));
-					} else if (encoded instanceof ByteBuffer) {
-						IoBuffer buffer = IoBuffer.wrap((ByteBuffer) encoded);
-						result.setEncodedBytes(buffer.remaining());
-						result.setEncodedObject(buffer);
-					} else if (encoded instanceof IoBuffer) {
-						result.setEncodedBytes(((IoBuffer) encoded).remaining());
-						result.setEncodedObject(encoded);
-					} else {
-						throw new RuntimeException("unsupported result type [" + encoded.getClass() + "]");
-					}
-				}
-				return result;
-			}
-		};
+		return encoder;
 	}
 
 	@Override
 	public ProtocolDecoder getDecoder(IoSession session) throws Exception {
-		return new AbstractBinaryDecoder() {
-			@Override
-			protected Object decodeBody(byte encodeType, IoBuffer ioBuffer) throws Exception {
-				NioCodecContext context = new NioCodecContextImpl();
-				return chain.decode(context, null, ioBuffer.buf());
-			}
-		};
+		return decoder;
 	}
 
 	public void addFirst(NioCodec codec) {
