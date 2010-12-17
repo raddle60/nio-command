@@ -11,7 +11,7 @@ public interface NioCodec {
 	 * @return 编码后的对象
 	 * @throws Exception
 	 */
-	public Object encode(NioCodecContext context, Object preEncoded) throws Exception;
+	public Object encode(NioCodecContext context, NioCodecChain chain, Object preEncoded) throws Exception;
 
 	/**
 	 * 解码对象
@@ -22,5 +22,5 @@ public interface NioCodec {
 	 * @return 解码后的对象
 	 * @throws Exception
 	 */
-	public Object decode(NioCodecContext context, Object preDecoded, ByteBuffer remainBytes) throws Exception;
+	public Object decode(NioCodecContext context, NioCodecChain chain, Object preDecoded, ByteBuffer remainBytes) throws Exception;
 }

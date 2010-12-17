@@ -14,8 +14,8 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 
 import com.raddle.nio.codec.NioCodec;
 import com.raddle.nio.codec.NioCodecContext;
-import com.raddle.nio.codec.impl.ChainNioCodec;
-import com.raddle.nio.codec.impl.DefaultNioCodecContext;
+import com.raddle.nio.codec.impl.NioCodecContextImpl;
+import com.raddle.nio.codec.impl.NioCodecChainImpl;
 import com.raddle.nio.mina.binary.AbstractBinaryDecoder;
 import com.raddle.nio.mina.binary.AbstractBinaryEncoder;
 import com.raddle.nio.mina.binary.BinaryEncodedResult;
@@ -28,14 +28,14 @@ import com.raddle.nio.mina.binary.BinaryEncodedResult;
  */
 public class ChainCodecFactory implements ProtocolCodecFactory {
 	public static final String ENCODED_TYPE = "encoded_type";
-	private ChainNioCodec chain = new ChainNioCodec();
+	private NioCodecChainImpl chain = new NioCodecChainImpl();
 
 	@Override
 	public ProtocolEncoder getEncoder(IoSession session) throws Exception {
 		return new AbstractBinaryEncoder() {
 			@Override
 			protected BinaryEncodedResult encodedObject(Object message) throws Exception {
-				NioCodecContext context = new DefaultNioCodecContext();
+				NioCodecContext context = new NioCodecContextImpl();
 				Object encoded = chain.encode(context, message);
 				BinaryEncodedResult result = new BinaryEncodedResult();
 				if (context.getAttribute(ENCODED_TYPE) != null) {
@@ -71,7 +71,7 @@ public class ChainCodecFactory implements ProtocolCodecFactory {
 		return new AbstractBinaryDecoder() {
 			@Override
 			protected Object decodeBody(byte encodeType, IoBuffer ioBuffer) throws Exception {
-				NioCodecContext context = new DefaultNioCodecContext();
+				NioCodecContext context = new NioCodecContextImpl();
 				return chain.decode(context, null, ioBuffer.buf());
 			}
 		};

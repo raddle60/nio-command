@@ -12,7 +12,7 @@ import com.raddle.nio.codec.NioCodecContext;
  * @author xurong
  *
  */
-public class DefaultNioCodecContext implements NioCodecContext {
+public class NioCodecContextImpl implements NioCodecContext {
 	private Map<String, Object> attributes = new HashMap<String, Object>();
 
 	@Override
