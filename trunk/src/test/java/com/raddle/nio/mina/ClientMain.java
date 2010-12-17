@@ -8,20 +8,22 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
+import com.raddle.nio.codec.impl.HessianCodec;
 import com.raddle.nio.mina.cmd.CommandContext;
 import com.raddle.nio.mina.cmd.SessionCommandSender;
 import com.raddle.nio.mina.cmd.api.CommandCallback;
 import com.raddle.nio.mina.cmd.api.CommandSender;
 import com.raddle.nio.mina.cmd.handler.AbstractCommandHandler;
-import com.raddle.nio.mina.hessian.HessianDecoder;
-import com.raddle.nio.mina.hessian.HessianEncoder;
+import com.raddle.nio.mina.codec.ChainCodecFactory;
 
 public class ClientMain {
 	public static void main(String[] args) {
 		NioSocketConnector connector = new NioSocketConnector();
 		connector.setConnectTimeoutMillis(1000);
 		connector.getSessionConfig().setReaderIdleTime(10);// 10秒沒收到数据就超时
-		connector.getFilterChain().addFirst("binaryCodec", new ProtocolCodecFilter(new HessianEncoder(), new HessianDecoder()));
+		ChainCodecFactory chainCodecFactory = new ChainCodecFactory();
+		chainCodecFactory.addFirst(new HessianCodec());
+		connector.getFilterChain().addFirst("codec", new ProtocolCodecFilter(chainCodecFactory));
 		// 处理接收的命令和响应
 		connector.setHandler(new AbstractCommandHandler() {
 			@Override

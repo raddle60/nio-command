@@ -72,7 +72,7 @@ public abstract class AbstractBinaryDecoder extends CumulativeProtocolDecoder {
 					// 處理body
 					IoBuffer buffer = IoBuffer.allocate((int) info.getWaitingBodyBytes());
 					in.get(buffer.array());
-					buffer.flip();
+					buffer.limit(info.getWaitingBodyBytes());
 					Object body = decodeBody(info.getEncodeType(), buffer);
 					out.write(body);
 				}
@@ -104,7 +104,7 @@ public abstract class AbstractBinaryDecoder extends CumulativeProtocolDecoder {
 		private boolean processHeader;
 		private boolean processBody;
 		private short waitingHeaderBytes;
-		private long waitingBodyBytes;
+		private int waitingBodyBytes;
 		private byte encodeType;
 
 		public byte getEncodeType() {
@@ -139,11 +139,11 @@ public abstract class AbstractBinaryDecoder extends CumulativeProtocolDecoder {
 			this.waitingHeaderBytes = waitingHeaderBytes;
 		}
 
-		public long getWaitingBodyBytes() {
+		public int getWaitingBodyBytes() {
 			return waitingBodyBytes;
 		}
 
-		public void setWaitingBodyBytes(long waitingBodyBytes) {
+		public void setWaitingBodyBytes(int waitingBodyBytes) {
 			this.waitingBodyBytes = waitingBodyBytes;
 		}
 	}
