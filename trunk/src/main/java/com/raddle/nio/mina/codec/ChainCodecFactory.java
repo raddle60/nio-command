@@ -14,8 +14,8 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 
 import com.raddle.nio.codec.NioCodec;
 import com.raddle.nio.codec.NioCodecContext;
-import com.raddle.nio.codec.impl.NioCodecContextImpl;
 import com.raddle.nio.codec.impl.NioCodecChainImpl;
+import com.raddle.nio.codec.impl.NioCodecContextImpl;
 import com.raddle.nio.mina.binary.AbstractBinaryDecoder;
 import com.raddle.nio.mina.binary.AbstractBinaryEncoder;
 import com.raddle.nio.mina.binary.BinaryEncodedResult;
@@ -41,7 +41,7 @@ public class ChainCodecFactory implements ProtocolCodecFactory {
 				if (context.getAttribute(ENCODED_TYPE) != null) {
 					result.setEncodedType(((Number) context.getAttribute(ENCODED_TYPE)).byteValue());
 				} else {
-					result.setEncodedType((byte) -1);
+					result.setEncodedType((byte)0);
 				}
 				if (encoded == null) {
 					result.setEncodedObject(null);
