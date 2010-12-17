@@ -8,15 +8,15 @@ package com.raddle.nio.mina.binary;
  * 
  */
 public class BinaryEncodedResult {
-	private long encodedBytes;
+	private int encodedBytes;
 	private byte encodedType;
 	private Object encodedObject;
 
-	public long getEncodedBytes() {
+	public int getEncodedBytes() {
 		return encodedBytes;
 	}
 
-	public void setEncodedBytes(long encodedBytes) {
+	public void setEncodedBytes(int encodedBytes) {
 		this.encodedBytes = encodedBytes;
 	}
 
