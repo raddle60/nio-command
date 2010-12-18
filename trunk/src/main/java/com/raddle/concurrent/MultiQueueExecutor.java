@@ -103,7 +103,7 @@ public class MultiQueueExecutor {
 								try {
 									task.run();
 								} catch (Throwable e) {
-									e.printStackTrace();
+									logger.error(e.getMessage(), e);
 								}
 								task = executeInfo.getQueue().poll();
 							}
