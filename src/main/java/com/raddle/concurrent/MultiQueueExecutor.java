@@ -50,9 +50,9 @@ public class MultiQueueExecutor {
 			scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(threadFactory);
 			poolExecutor = new ThreadPoolExecutor(0, maxThreads, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), threadFactory);
 		}
-		scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+		scheduledExecutorService.scheduleWithFixedDelay(new CatchedRunable() {
 			@Override
-			public void run() {
+			public void runInCatch() {
 				// 定期清除空队列
 				synchronized (queueMap) {
 					for (Iterator<String> iterator = queueMap.keySet().iterator(); iterator.hasNext();) {
@@ -120,7 +120,23 @@ public class MultiQueueExecutor {
 			}
 		}
 	}
+	
+	/**
+	 * 获得当前在poo里的线程
+	 * @return
+	 */
+	public int getPoolSize(){
+		return poolExecutor.getPoolSize();
+	}
 
+	/**
+	 * 获得当前队列个数
+	 * @return
+	 */
+	public int getQueueSize(){
+		return queueMap.size();
+	}
+	
 	public void shutdown() {
 		poolExecutor.shutdown();
 		scheduledExecutorService.shutdown();

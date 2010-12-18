@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.LoggerFactory;
 
+import com.raddle.concurrent.CatchedRunable;
 import com.raddle.nio.mina.cmd.api.CommandCallback;
 import com.raddle.nio.mina.exception.ExceptionWrapper;
 
@@ -27,10 +28,10 @@ public class ResponseWaiting {
 	private static ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor(new DaemonThreadFactory());
 
 	static {
-		scheduledExecutor.scheduleWithFixedDelay(new Runnable() {
+		scheduledExecutor.scheduleWithFixedDelay(new CatchedRunable() {
 			@Override
 			@SuppressWarnings("unchecked")
-			public void run() {
+			public void runInCatch() {
 				try {
 					// 检查超时
 					List<String> keys = new LinkedList<String>(waitingMap.keySet());
