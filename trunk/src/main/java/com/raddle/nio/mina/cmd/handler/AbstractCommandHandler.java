@@ -1,6 +1,5 @@
 package com.raddle.nio.mina.cmd.handler;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -22,7 +21,7 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 	protected int maxExecuteThreads = 10;
 	protected int maxQueueThreads = 10;
-	protected ExecutorService executorService = null;
+	protected ThreadPoolExecutor executorService = null;
 	protected MultiQueueExecutor queueExecutor = null;
 	@Override
 	public void messageReceived(final IoSession session, final Object message) throws Exception {
@@ -147,6 +146,14 @@ public abstract class AbstractCommandHandler extends IoHandlerAdapter {
 
 	public void setMaxQueueThreads(int maxQueueThreads) {
 		this.maxQueueThreads = maxQueueThreads;
+	}
+
+	public ThreadPoolExecutor getExecutorService() {
+		return executorService;
+	}
+
+	public MultiQueueExecutor getQueueExecutor() {
+		return queueExecutor;
 	}
 
 }
